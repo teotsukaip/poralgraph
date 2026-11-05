@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="description" content="MacBookのフロントカメラで両目の位置を測り、画面を窓のように立体表示します。" />
+  <title>窓の向こう</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%2307080b'/%3E%3Crect x='6' y='7' width='20' height='18' fill='none' stroke='%23f4f1ea' stroke-width='1.5'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23e7a35a'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="./css/portal.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="view"></canvas>
+  <div id="glass" aria-hidden="true"></div>
+
+  <header class="top">
+    <div class="brand">
+      <p class="eyebrow">Head-coupled portal</p>
+      <h1>窓の向こう</h1>
+    </div>
+    <div class="status" id="status">
+      <span class="dot" id="dot"></span>
+      <span id="status-text">準備しています</span>
+      <span class="depth" id="depth"></span>
+    </div>
+  </header>
+
+  <section class="panel" id="panel" aria-label="表示の調整" hidden>
+    <label class="field">
+      <span>画面サイズ <b id="inch-label">14.2</b> インチ</span>
+      <input id="inch" type="range" min="11" max="32" step="0.1" value="14.2" />
+    </label>
+    <label class="field">
+      <span>奥行きの強さ <b id="gain-label">1.00</b></span>
+      <input id="gain" type="range" min="0.6" max="1.8" step="0.01" value="1" />
+    </label>
+    <div class="row">
+      <button type="button" id="calibrate" disabled>50cmで較正</button>
+      <button type="button" id="anaglyph" aria-pressed="false">赤青メガネ</button>
+    </div>
+    <div class="row">
+      <button type="button" id="mouse-mode" aria-pressed="false">マウス視点</button>
+      <button type="button" id="fullscreen">全画面</button>
+    </div>
+    <p class="keys">F 全画面 · C 較正 · A 赤青 · M マウス · Space 立ち止まる · 矢印で視点</p>
+  </section>
+
+  <figure class="preview" id="preview" hidden>
+    <canvas id="preview-canvas" width="168" height="126"></canvas>
+    <figcaption>両目</figcaption>
+  </figure>
+
+  <div class="intro" id="intro">
+    <p class="eyebrow">MacBook フロントカメラ</p>
+    <h2>画面が、窓になる。</h2>
+    <p>
+      カメラが両目の位置を測り、その位置から見える景色だけを描きます。
+      顔を左右・上下・前後に動かすと、ガラス越しに覗き込むように奥行きが変わります。
+      奥のモデルは部屋を歩き、近くまで来るとこちらを向きます。
+    </p>
+    <div class="intro-actions">
+      <button type="button" class="primary" id="start">カメラではじめる</button>
+      <button type="button" class="ghost" id="start-mouse">マウスで覗く</button>
+    </div>
+    <p class="fine">映像はこの端末の中だけで処理されます。明るい顔、逆光なし、画面から40〜70cmが安定します。</p>
+  </div>
+
+  <p class="hint" id="hint" hidden>顔を動かして、窓の向こうを覗いてください</p>
+
+  <div class="cal-overlay" id="cal-overlay" hidden>
+    <p id="cal-count">3</p>
+    <p>画面の正面、およそ50cmのところに顔を置いてください</p>
+  </div>
+
+  <div class="loading" id="loading">
+    <p>モデルを読み込んでいます</p>
+    <div class="bar"><span id="bar"></span></div>
+    <p id="load-label">0%</p>
+  </div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
